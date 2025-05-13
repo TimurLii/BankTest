@@ -1,4 +1,8 @@
 package com.example.bankcards.dto;
 
-public record JwtResponse  (String token){
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record JwtResponse(
+        @NotBlank(message = "token не должен быть пустым")
+        String token
+) {}

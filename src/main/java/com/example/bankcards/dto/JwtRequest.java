@@ -1,4 +1,11 @@
 package com.example.bankcards.dto;
 
-public record JwtRequest(String cardHolderName, String password) {
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record JwtRequest(
+        @NotBlank(message = "cardHolderName не должен быть пустым")
+        String cardHolderName,
+
+        @NotBlank(message = "password не должен быть пустым")
+        String password
+) {}

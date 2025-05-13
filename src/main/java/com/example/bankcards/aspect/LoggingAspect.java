@@ -13,12 +13,14 @@ public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Around("@within(MyLogFromMethod)")
-    public Object   logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("within(com.example.bankcards.service..*) || " +
+            "within(com.example.bankcards.controller..*) || " +
+            "within(com.example.bankcards.repository..*)")
+    public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
 
-        try{
+        try {
             String resString = String.format("Метод: %s, из класса: %s выполняется.", methodName, className);
             logger.info(resString);
 
@@ -26,15 +28,14 @@ public class LoggingAspect {
 
             resString = String.format("Метод: %s, из класса: %s завершил выполнение.", methodName, className);
 
-            logger.info(String.valueOf(resString));
+            logger.info(resString);
 
             return result;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("Ошибка при выполнении метода: {}.{}() - {}", className, methodName, e.getMessage());
             throw e;
         }
-
 
 
     }

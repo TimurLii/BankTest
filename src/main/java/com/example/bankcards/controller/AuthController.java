@@ -3,6 +3,7 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.JwtRequest;
 import com.example.bankcards.dto.RegistrationUserDto;
 import com.example.bankcards.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -18,12 +19,12 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest jwtRequest){
+    public ResponseEntity<?> createAuthToken(@RequestBody @Valid JwtRequest jwtRequest){
         return authService.createAuthToken(jwtRequest);
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto){
+    public ResponseEntity<?> createNewUser(@RequestBody @Valid  RegistrationUserDto registrationUserDto){
         return authService.createNewUser(registrationUserDto);
     }
 }

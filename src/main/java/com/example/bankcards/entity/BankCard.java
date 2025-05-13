@@ -26,6 +26,9 @@ public class BankCard {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/yyyy")
     private Date validityPeriod;
 
+    @Column(name = "bank_Card_Number")
+    private String bankCardNumber;
+
     @Enumerated(EnumType.STRING)
     private StatusCard statusCard;
 
