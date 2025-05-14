@@ -3,6 +3,8 @@ package com.example.bankcards.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.YearMonth;
 import java.util.Date;
@@ -10,6 +12,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "bank_card")
+@ToString(exclude = "owner")
 public class BankCard {
 
     @Id
@@ -17,9 +20,9 @@ public class BankCard {
     @Column(name = "id", nullable = false)
     private Long id;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Exclude
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @Column(name = "validity_period")

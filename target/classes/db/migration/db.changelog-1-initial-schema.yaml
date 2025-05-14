@@ -1,0 +1,142 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Timur
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_holder_name
+                  type: varchar(255)
+              - column:
+                  name: password
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+
+        - createTable:
+            tableName: bank_card
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: balance
+                  type: bigint
+              - column:
+                  name: owner_id
+                  type: bigint
+              - column:
+                  name: validity_period
+                  type: timestamp(6)
+              - column:
+                  name: bank_card_number
+                  type: varchar(255)
+              - column:
+                  name: status_card
+                  type: varchar(255)
+                  constraints:
+                    checkConstraint: "status_card in ('ACTIVE','INACTIVE','DEADLINE_EXPIRED')"
+
+        - createTable:
+            tableName: user_bank_cards
+            columns:
+              - column:
+                  name: bank_card_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+            constraints:
+              primaryKey:
+                primaryKeyName: pk_user_bank_cards
+                primaryKeyColumns:
+                  - bank_card_id
+                  - user_id
+
+        - createTable:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: bank_card
+            baseColumnNames: owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_bank_card_owner
+
+        - addForeignKeyConstraint:
+            baseTableName: user_bank_cards
+            baseColumnNames: bank_card_id
+            referencedTableName: bank_card
+            referencedColumnNames: id
+            constraintName: fk_user_bank_cards_bank_card
+
+        - addForeignKeyConstraint:
+            baseTableName: user_bank_cards
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_bank_cards_user
+
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_users_roles_role
+
+        - addForeignKeyConstraint:
+            baseTableName: users_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_users_roles_user
+
+        - addUniqueConstraint:
+            tableName: user_bank_cards
+            columnNames: user_id, bank_card_id
+            constraintName: uk_user_bank_cards_user_id_bank_card_id

@@ -8,32 +8,38 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+
 
 @Component
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
 
-    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil) {
+    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil,  @Lazy  UserDetailsService userDetailsService) {
         this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
         String cardHolderName = null;
-
         String jwtToken = null;
 
         if(authHeader != null && authHeader.startsWith("Bearer ")){
@@ -41,22 +47,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try{
                 cardHolderName = jwtTokenUtil.getCardHolderName(jwtToken);
             } catch (ExpiredJwtException e) {
-                log.debug("Время жизни token вышло");
+                log.debug("Token expired");
             } catch (SignatureException e) {
-                log.debug("Подпись неправильная");
+                log.debug("Invalid signature");
             }
         }
+
         if(cardHolderName != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            List<String > roles = jwtTokenUtil.getRoles(jwtToken);
-            List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .toList();
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    cardHolderName, null,authorities);
+            // Загружаем пользователя из базы
+            UserDetails userDetails = userDetailsService.loadUserByUsername(cardHolderName);
 
-            SecurityContextHolder.getContext().setAuthentication(token);
+            // Проверяем валидность токена (если нужно)
+            if(jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(token);
+            }
         }
-        filterChain.doFilter(request, response);
 
+        filterChain.doFilter(request, response);
     }
 }

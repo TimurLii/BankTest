@@ -1,7 +1,4 @@
 spring:
-  liquibase:
-    enabled : false
-    change-log: classpath:db/migration/db.changelog-master.xml
   application:
     name: Bank
   datasource:
@@ -9,11 +6,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/Bank
     username: postgres
     password: admin
+  liquibase:
+    change-log: classpath:db/migration/db.changelog-master.yaml
   jpa:
     show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
 jwt:
   secret: 7jk534l5k7n7b5j4kl3lfjk8v95n487g8df93n58v
   lifetime: 30m

@@ -1,16 +1,17 @@
 package com.example.bankcards.dto;
 
 import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.util.MaskCardNumber;
+import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.Date;
 
 public record BankCardDto(
-        @NotNull(message = "UserDto не должен быть null")
         UserDto userDto,
-
         @NotNull(message = "validPeriod не должен быть null")
         @FutureOrPresent(message = "validPeriod должен быть в будущем или настоящем")
         Date validPeriod,
@@ -18,7 +19,11 @@ public record BankCardDto(
         @NotNull(message = "balance не должен быть null")
         @PositiveOrZero(message = "balance должен быть положительным или нулём")
         Long balance,
+        @Nullable
+        String bankCardNumber,
 
         @NotNull(message = "statusCard не должен быть null")
         BankCard.StatusCard statusCard
-) {}
+
+) {
+}

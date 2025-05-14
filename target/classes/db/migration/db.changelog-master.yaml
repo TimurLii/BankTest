@@ -1,9 +1,6 @@
 databaseChangeLog:
-#  - include:
-#      file: db/changelog/db.changelog-yaml-example.yaml
-#  - include:
-#      file: db/changelog/db.changelog-sql-example.sql
-#  - include:
-#      file: db/changelog/db.changelog-json-example.json
-#  - include:
-#      file: db/changelog/db.changelog-xml-example.xml
+  - include:
+      file: db/migration/db.changelog-1-initial-schema.yaml
+  - include :
+      file: db/migration/db.changelog-2-insert-data.yaml
+

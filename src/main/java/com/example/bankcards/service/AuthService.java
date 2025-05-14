@@ -53,9 +53,9 @@ public class AuthService {
             return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(), "Такой пользователь существует"), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.createNewUser(registrationUserDto);
+        ResponseEntity<UserDto> userDto = userService.createNewUser(registrationUserDto);
 
-        return ResponseEntity.ok(new UserDto(user.getId(),user.getCardHolderName()));
+        return ResponseEntity.ok(userDto);
 
     }
 }

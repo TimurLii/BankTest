@@ -60,4 +60,12 @@ public class JwtTokenUtil {
     public String getCardHolderName(String jwtToken) {
         return getAllClaimsFromToken(jwtToken).getSubject();
     }
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = getCardHolderName(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    private boolean isTokenExpired(String token) {
+        final Date expiration = getAllClaimsFromToken(token).getExpiration();
+        return expiration.before(new Date());
+    }
 }

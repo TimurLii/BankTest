@@ -10,5 +10,7 @@ public record RegistrationUserDto(
         String password,
 
         @NotBlank(message = "passwordConfirm не должен быть пустым")
-        String passwordConfirm
+        String passwordConfirm,
+        @NotBlank(message = "email не должен быть пустым")
+        String email
 ) {}

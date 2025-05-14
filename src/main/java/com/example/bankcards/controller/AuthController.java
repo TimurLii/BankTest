@@ -23,8 +23,9 @@ public class AuthController {
         return authService.createAuthToken(jwtRequest);
     }
 
-    @PostMapping("/registration")
-    public ResponseEntity<?> createNewUser(@RequestBody @Valid  RegistrationUserDto registrationUserDto){
-        return authService.createNewUser(registrationUserDto);
-    }
+    //TODO За создание user отвечает admin
+//    @PostMapping("/registration")
+//    public ResponseEntity<?> createNewUser(@RequestBody @Valid  RegistrationUserDto registrationUserDto){
+//        return authService.createNewUser(registrationUserDto);
+//    }
 }

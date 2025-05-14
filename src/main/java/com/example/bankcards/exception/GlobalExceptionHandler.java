@@ -15,6 +15,24 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<AppError> handleAllExceptions(Exception ex) {
+        AppError error = new AppError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error");
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<String> handleEmailAlreadyException(EmailAlreadyExistsException ex){
+        return ResponseEntity.badRequest().body("Такой Email уже существует " + ex.getMessage());
+    }
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException ex){
+        return ResponseEntity.badRequest().body("Такой Email не найден  " );
+    }
+    @ExceptionHandler(BankCardNotFoundException.class)
+    public ResponseEntity<String> handleBankCardNotFoundException(BankCardNotFoundException ex){
+        return ResponseEntity.badRequest().body("У пользователя нет банковских карт");
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -37,12 +55,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Entity not found: " + ex.getMessage());
     }
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleGenericException(Exception ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .body("An unexpected error occurred: " + ex.getMessage());
-//    }
-
-    //TODO удалить лишку
 
 }
