@@ -54,10 +54,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if(cardHolderName != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            // Загружаем пользователя из базы
+
             UserDetails userDetails = userDetailsService.loadUserByUsername(cardHolderName);
 
-            // Проверяем валидность токена (если нужно)
             if(jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

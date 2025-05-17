@@ -6,15 +6,16 @@ import com.example.bankcards.dto.BankCardUpdateDto;
 import com.example.bankcards.impl.UserDetailsImpl;
 import com.example.bankcards.service.BankCardService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 public class BankCardController {
@@ -26,30 +27,34 @@ public class BankCardController {
 
     @PostMapping(value = "/cards", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<?> createBankCard(@RequestBody @Valid BankCardDto bankCardDto){
+    public ResponseEntity<?> createBankCard(@RequestBody @Valid BankCardDto bankCardDto) {
         return bankCardService.save(bankCardDto);
     }
+
     @GetMapping("/cards")
     @PreAuthorize("hasRole('ADMIN') or isAuthenticated()")
-    public ResponseEntity<List<BankCardDto>> getCards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public Page<BankCardDto> getCards(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                      @PageableDefault(size = 1) Pageable pageable) {
         String username = userDetails.getUsername();
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            return bankCardService.getAllBankCard();
+            return bankCardService.getAllBankCard(pageable);
         } else {
-            return bankCardService.getCardsForUser(username);
+            return bankCardService.getCardsForUser(username ,pageable);
         }
     }
 
+
     @DeleteMapping("/cards/{id}")
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<BankCardDto> deleteBankCard(@PathVariable Long id){
+    public ResponseEntity<BankCardDto> deleteBankCard(@PathVariable Long id) {
         return bankCardService.deleteBankCardById(id);
 
     }
+
     @PatchMapping("/cards/{id}")
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<BankCardDto> patchBankCard(@PathVariable Long id, @RequestBody @Valid BankCardUpdateDto bankCardUpdateDto){
+    public ResponseEntity<BankCardDto> patchBankCard(@PathVariable Long id, @RequestBody @Valid BankCardUpdateDto bankCardUpdateDto) {
         return bankCardService.updateBankCard(id, bankCardUpdateDto);
     }
 

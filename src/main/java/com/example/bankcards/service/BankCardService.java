@@ -2,31 +2,27 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.BankCardDto;
 import com.example.bankcards.dto.BankCardUpdateDto;
-import com.example.bankcards.dto.BankTransferDto;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.BankCardNotFoundException;
 import com.example.bankcards.exception.EmailNotFoundException;
-import com.example.bankcards.exception.UserHasNoCardException;
-import com.example.bankcards.impl.UserDetailsImpl;
 import com.example.bankcards.repository.BankCardRepository;
-import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CreateBankCardNumber;
 import com.example.bankcards.util.MaskCardNumber;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class BankCardService {
@@ -59,9 +55,7 @@ public class BankCardService {
             user.setBankCards(new HashSet<>());
         }
 
-
         user.getBankCards().add(bankCard);
-
 
         userService.save(user);
 
@@ -75,10 +69,8 @@ public class BankCardService {
         } while (bankCardRepository.getBankCardsByBankCardNumber(bankCardNumber) != null);
         return bankCardNumber;
     }
-
-    public ResponseEntity<List<BankCardDto>> getAllBankCard() {
-        List<BankCardDto> listBankCardDto = bankCardRepository.findAll().stream()
-                .filter(bankCard -> bankCard.getOwner() != null)
+    public Page<BankCardDto> getAllBankCard(Pageable pageable) {
+        return bankCardRepository.findAll(pageable)
                 .map(bankCard -> {
                     UserDto userDto = new UserDto(
                             bankCard.getOwner().getCardHolderName(),
@@ -91,11 +83,59 @@ public class BankCardService {
                             MaskCardNumber.maskCardNumber(bankCard.getBankCardNumber()),
                             bankCard.getStatusCard()
                     );
-                })
-                .collect(Collectors.toList());
+                });
+    }
 
+    public Page<BankCardDto> getCardsForUser(String username, Pageable pageable) {
+        User user = userService.findByCardHolderName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Page<BankCard> cardsPage = bankCardRepository.findByOwner(user, pageable);
+
+        return cardsPage.map(el -> new BankCardDto(
+                new UserDto(el.getOwner().getCardHolderName(), el.getOwner().getEmail()),
+                el.getValidityPeriod(),
+                el.getBalance(),
+                el.getBankCardNumber(),
+                el.getStatusCard()
+        ));
+    }
+
+
+    public ResponseEntity<List<BankCardDto>> getCardsForUser(String username) {
+        User user = userService.findByCardHolderName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<BankCard> cards = bankCardRepository.findByOwner(user);
+
+        List<BankCardDto> listBankCardDto = cards.stream().map(el -> new BankCardDto(
+                new UserDto(el.getOwner().cardHolderName, el.getOwner().getEmail()),
+                el.getValidityPeriod(),
+                el.getBalance(),
+                el.getBankCardNumber(),
+                el.getStatusCard()
+        )).collect(Collectors.toList());
         return ResponseEntity.ok(listBankCardDto);
     }
+//    public ResponseEntity<List<BankCardDto>> getAllBankCard() {
+//        List<BankCardDto> listBankCardDto = bankCardRepository.findAll().stream()
+//                .filter(bankCard -> bankCard.getOwner() != null)
+//                .map(bankCard -> {
+//                    UserDto userDto = new UserDto(
+//                            bankCard.getOwner().getCardHolderName(),
+//                            bankCard.getOwner().getEmail()
+//                    );
+//                    return new BankCardDto(
+//                            userDto,
+//                            bankCard.getValidityPeriod(),
+//                            bankCard.getBalance(),
+//                            MaskCardNumber.maskCardNumber(bankCard.getBankCardNumber()),
+//                            bankCard.getStatusCard()
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//
+//        return ResponseEntity.ok(listBankCardDto);
+//    }
 
     public ResponseEntity<BankCardDto> deleteBankCardById(Long id) {
 
@@ -187,42 +227,6 @@ public class BankCardService {
         saveAll(updatedBankCards);
 
         return updatedBankCards;
-    }
-
-    public ResponseEntity<List<BankCardDto>> getCardsForUser(String username) {
-        User user = userService.findByCardHolderName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        List<BankCard> cards = bankCardRepository.findByOwner(user);
-
-        List<BankCardDto> listBankCardDto = cards.stream().map(el -> new BankCardDto(
-                new UserDto(el.getOwner().cardHolderName, el.getOwner().getEmail()),
-                el.getValidityPeriod(),
-                el.getBalance(),
-                el.getBankCardNumber(),
-                el.getStatusCard()
-        )).collect(Collectors.toList());
-        return ResponseEntity.ok(listBankCardDto);
-    }
-
-    public ResponseEntity<List<BankCardDto>> bankCardTransfer(BankTransferDto bankTransferDto, UserDetailsImpl userDetails) {
-        //TODO Доделать перевод
-        List<BankCardDto> cardsForUser = getCardsForUser(userDetails.getUsername()).getBody();
-        if (cardsForUser == null || cardsForUser.isEmpty()) {
-            throw new UserHasNoCardException("У пользователя нет банковских карт");
-        }
-        System.err.println(userDetails.getEmail());
-        cardsForUser.stream().forEach(el-> System.err.println(
-                haveBankCard(el.bankCardNumber(), userDetails.getCardHolderName())));
-
-
-        return null;
-    }
-
-    private boolean haveBankCard(String bankCardNumber, String userName) {
-        if (bankCardRepository.existsByBankCardNumberAndOwner_CardHolderName(bankCardNumber, userName)) {
-            return true;
-        }
-        throw new UserHasNoCardException("Данная карта не является картой пользователя");
     }
 }
 //TODO проверить методы updateBankCard и сделать из них один если получится

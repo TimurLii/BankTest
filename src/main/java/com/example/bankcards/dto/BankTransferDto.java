@@ -1,19 +1,17 @@
 package com.example.bankcards.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record BankTransferDto(
         @NotBlank(message = "senders card не может быть пустым")
-        @PositiveOrZero
         @Size(min = 12, message = "senders card не может быть меньше 12")
+        @Pattern(regexp = "\\d+", message = "sendersCard должен содержать только цифры")
         String sendersCard,
         @NotBlank(message = "recipients card не может быть пустым")
-        @PositiveOrZero
         @Size(min = 12, message = "recipients card не может быть меньше 12")
+        @Pattern(regexp = "\\d+", message = "sendersCard должен содержать только цифры")
         String recipientsCard,
-        @NotBlank(message = "summa  не может быть пустым")
+        @NotNull(message = "summa  не может быть меньше нуля")
         @PositiveOrZero(message = "summa не может быть меньше нуля")
         Long summa
 

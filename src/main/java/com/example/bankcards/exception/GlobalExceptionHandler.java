@@ -4,13 +4,13 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @ControllerAdvice
@@ -21,18 +21,46 @@ public class GlobalExceptionHandler {
         AppError error = new AppError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String > handleAuthorizationException(AuthorizationException ex){
+        return ResponseEntity.badRequest().body( ex.getMessage());
+
+    }
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException ex) {
+        String message = "Requested media type is not acceptable: " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(message);
+    }
+
+
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<String> handleEmailAlreadyException(EmailAlreadyExistsException ex){
+    public ResponseEntity<String> handleEmailAlreadyException(EmailAlreadyExistsException ex) {
         return ResponseEntity.badRequest().body("Такой Email уже существует " + ex.getMessage());
     }
-    @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException ex){
-        return ResponseEntity.badRequest().body("Такой Email не найден  " );
+
+    @ExceptionHandler(UserHasNoCardException.class)
+    public ResponseEntity<String> handleUserHasNoCardException(UserHasNoCardException ex) {
+        return ResponseEntity.badRequest().body("У данного пользователя нет доступа к одной из карт " + ex.getMessage());
     }
+
+    @ExceptionHandler(UserNoHasMoney.class)
+    public ResponseEntity<String > handleUserNoHasMoney (UserNoHasMoney ex){
+        return ResponseEntity.badRequest().body("У данного пользователя  не хватает денежных средств");
+
+    }
+
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException ex) {
+        return ResponseEntity.badRequest().body("Такой Email не найден  ");
+    }
+
     @ExceptionHandler(BankCardNotFoundException.class)
-    public ResponseEntity<String> handleBankCardNotFoundException(BankCardNotFoundException ex){
+    public ResponseEntity<String> handleBankCardNotFoundException(BankCardNotFoundException ex) {
         return ResponseEntity.badRequest().body("У пользователя нет банковских карт");
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
