@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @Service
 public class BankCardService {
 
-
     private final BankCardRepository bankCardRepository;
     private final UserService userService;
     private final CreateBankCardNumber createBankCardNumber;
@@ -37,7 +36,6 @@ public class BankCardService {
         this.userService = userService;
         this.createBankCardNumber = createBankCardNumber;
     }
-
 
     public ResponseEntity<BankCardDto> save(BankCardDto bankCardDto) {
 
@@ -57,9 +55,17 @@ public class BankCardService {
 
         user.getBankCards().add(bankCard);
 
+        BankCardDto newBankCardDto = new BankCardDto(
+                new UserDto(bankCard.getOwner().getCardHolderName(), bankCard.getOwner().getEmail()),
+                bankCard.getValidityPeriod(),
+                bankCard.getBalance(),
+                bankCard.getBankCardNumber(),
+                bankCard.getStatusCard()
+        );
+
         userService.save(user);
 
-        return ResponseEntity.ok(bankCardDto);
+        return ResponseEntity.ok(newBankCardDto);
     }
 
     private String getBankCardNumber() {
@@ -69,6 +75,7 @@ public class BankCardService {
         } while (bankCardRepository.getBankCardsByBankCardNumber(bankCardNumber) != null);
         return bankCardNumber;
     }
+
     public Page<BankCardDto> getAllBankCard(Pageable pageable) {
         return bankCardRepository.findAll(pageable)
                 .map(bankCard -> {
@@ -80,7 +87,7 @@ public class BankCardService {
                             userDto,
                             bankCard.getValidityPeriod(),
                             bankCard.getBalance(),
-                            MaskCardNumber.maskCardNumber(bankCard.getBankCardNumber()),
+                            MaskCardNumber.getMaskCardNumber(bankCard.getBankCardNumber()),
                             bankCard.getStatusCard()
                     );
                 });
@@ -101,14 +108,13 @@ public class BankCardService {
         ));
     }
 
-
     public ResponseEntity<List<BankCardDto>> getCardsForUser(String username) {
         User user = userService.findByCardHolderName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<BankCard> cards = bankCardRepository.findByOwner(user);
 
         List<BankCardDto> listBankCardDto = cards.stream().map(el -> new BankCardDto(
-                new UserDto(el.getOwner().cardHolderName, el.getOwner().getEmail()),
+                new UserDto(el.getOwner().getCardHolderName(), el.getOwner().getEmail()),
                 el.getValidityPeriod(),
                 el.getBalance(),
                 el.getBankCardNumber(),
@@ -116,26 +122,6 @@ public class BankCardService {
         )).collect(Collectors.toList());
         return ResponseEntity.ok(listBankCardDto);
     }
-//    public ResponseEntity<List<BankCardDto>> getAllBankCard() {
-//        List<BankCardDto> listBankCardDto = bankCardRepository.findAll().stream()
-//                .filter(bankCard -> bankCard.getOwner() != null)
-//                .map(bankCard -> {
-//                    UserDto userDto = new UserDto(
-//                            bankCard.getOwner().getCardHolderName(),
-//                            bankCard.getOwner().getEmail()
-//                    );
-//                    return new BankCardDto(
-//                            userDto,
-//                            bankCard.getValidityPeriod(),
-//                            bankCard.getBalance(),
-//                            MaskCardNumber.maskCardNumber(bankCard.getBankCardNumber()),
-//                            bankCard.getStatusCard()
-//                    );
-//                })
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok(listBankCardDto);
-//    }
 
     public ResponseEntity<BankCardDto> deleteBankCardById(Long id) {
 
@@ -179,7 +165,6 @@ public class BankCardService {
         }
 
         bankCardRepository.save(bankCard);
-
 
         UserDto userDto = new UserDto(bankCard.getOwner().getCardHolderName(), bankCard.getOwner().getEmail());
         BankCardDto updatedDto = new BankCardDto(
@@ -229,4 +214,4 @@ public class BankCardService {
         return updatedBankCards;
     }
 }
-//TODO проверить методы updateBankCard и сделать из них один если получится
+

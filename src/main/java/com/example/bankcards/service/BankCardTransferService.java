@@ -9,7 +9,7 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.AuthorizationException;
 import com.example.bankcards.exception.UserHasNoCardException;
 import com.example.bankcards.exception.UserNoHasMoney;
-import com.example.bankcards.impl.UserDetailsImpl;
+import com.example.bankcards.security.UserDetailsImpl;
 import com.example.bankcards.repository.BankCardRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -71,11 +71,11 @@ public class BankCardTransferService {
         BankCard recipientsBankCard = bankCardRepository.findBankCardByBankCardNumber(bankTransferDto.recipientsCard()).get();
 
         BankCardUpdateDto sendersBankCardUpdate = new BankCardUpdateDto
-                (new UserDto(sendersBankCard.getOwner().cardHolderName, sendersBankCard.getOwner().getEmail()),
+                (new UserDto(sendersBankCard.getOwner().getCardHolderName(), sendersBankCard.getOwner().getEmail()),
                         sendersBankCard.getValidityPeriod(), sendersBankCard.getBalance() - sum, sendersBankCard.getStatusCard());
 
         BankCardUpdateDto recipientsBankCardUpdate = new BankCardUpdateDto
-                (new UserDto(recipientsBankCard.getOwner().cardHolderName, recipientsBankCard.getOwner().getEmail()),
+                (new UserDto(recipientsBankCard.getOwner().getCardHolderName(), recipientsBankCard.getOwner().getEmail()),
                         recipientsBankCard.getValidityPeriod(), recipientsBankCard.getBalance() + sum, recipientsBankCard.getStatusCard());
 
         bankCardService.updateBankCard(sendersBankCard.getId(), sendersBankCardUpdate);

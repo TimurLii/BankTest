@@ -1,7 +1,6 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.JwtRequest;
-import com.example.bankcards.dto.RegistrationUserDto;
 import com.example.bankcards.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,4 @@ public class AuthController {
         return authService.createAuthToken(jwtRequest);
     }
 
-    //TODO За создание user отвечает admin
-//    @PostMapping("/registration")
-//    public ResponseEntity<?> createNewUser(@RequestBody @Valid  RegistrationUserDto registrationUserDto){
-//        return authService.createNewUser(registrationUserDto);
-//    }
 }

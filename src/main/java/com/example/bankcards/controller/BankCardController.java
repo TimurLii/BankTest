@@ -3,7 +3,7 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.BankCardDto;
 
 import com.example.bankcards.dto.BankCardUpdateDto;
-import com.example.bankcards.impl.UserDetailsImpl;
+import com.example.bankcards.security.UserDetailsImpl;
 import com.example.bankcards.service.BankCardService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

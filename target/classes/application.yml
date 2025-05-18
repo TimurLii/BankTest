@@ -15,9 +15,14 @@ spring:
       ddl-auto: none
 jwt:
   secret: 7jk534l5k7n7b5j4kl3lfjk8v95n487g8df93n58v
-  lifetime: 30m
+  lifetime: PT30M
 
-
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+    enabled: true
 
 #Что нужно сделать:
 #  - Указать настройки подключения к базе данных.

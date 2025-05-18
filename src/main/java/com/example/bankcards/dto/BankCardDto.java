@@ -1,10 +1,8 @@
 package com.example.bankcards.dto;
 
 import com.example.bankcards.entity.BankCard;
-import com.example.bankcards.util.MaskCardNumber;
 import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 

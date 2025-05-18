@@ -4,9 +4,8 @@ import com.example.bankcards.dto.JwtRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.RegistrationUserDto;
 import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.AuthError;
-import com.example.bankcards.impl.UserDetailsImpl;
+import com.example.bankcards.security.UserDetailsImpl;
 import com.example.bankcards.util.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,6 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-
     public ResponseEntity<?> createAuthToken(JwtRequest jwtRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.cardHolderName(), jwtRequest.password()));
@@ -41,7 +39,6 @@ public class AuthService {
 
         String token = jwtTokenUtil.generateToken((UserDetailsImpl) userDetails);
         return ResponseEntity.ok(new JwtResponse(token));
-
 
     }
 

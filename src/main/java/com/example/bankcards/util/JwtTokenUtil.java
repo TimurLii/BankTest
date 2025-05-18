@@ -1,6 +1,6 @@
 package com.example.bankcards.util;
 
-import com.example.bankcards.impl.UserDetailsImpl;
+import com.example.bankcards.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

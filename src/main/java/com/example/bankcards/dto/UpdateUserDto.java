@@ -4,7 +4,6 @@ import io.micrometer.common.lang.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record UpdateUserDto(
         @Nullable

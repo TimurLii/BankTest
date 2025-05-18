@@ -5,7 +5,7 @@ import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EmailAlreadyExistsException;
-import com.example.bankcards.impl.UserDetailsImpl;
+import com.example.bankcards.security.UserDetailsImpl;
 import com.example.bankcards.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;

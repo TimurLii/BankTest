@@ -9,7 +9,7 @@ public record BankTransferDto(
         String sendersCard,
         @NotBlank(message = "recipients card не может быть пустым")
         @Size(min = 12, message = "recipients card не может быть меньше 12")
-        @Pattern(regexp = "\\d+", message = "sendersCard должен содержать только цифры")
+        @Pattern(regexp = "\\d+", message = "recipientsCard должен содержать только цифры")
         String recipientsCard,
         @NotNull(message = "summa  не может быть меньше нуля")
         @PositiveOrZero(message = "summa не может быть меньше нуля")

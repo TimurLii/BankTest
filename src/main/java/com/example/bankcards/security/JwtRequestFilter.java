@@ -1,4 +1,4 @@
-package com.example.bankcards.config;
+package com.example.bankcards.security;
 
 import com.example.bankcards.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
 
-    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil,  @Lazy  UserDetailsService userDetailsService) {
+    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil, @Lazy  UserDetailsService userDetailsService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
     }

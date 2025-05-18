@@ -7,7 +7,6 @@ import lombok.ToString;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,10 +17,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    public Long id;
+    private Long id;
 
     @Column(name = "card_holder_name")
-    public String cardHolderName;
+    private String cardHolderName;
 
     @Column(name = "password")
     private String password;

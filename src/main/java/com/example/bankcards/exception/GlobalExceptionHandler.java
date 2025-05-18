@@ -41,16 +41,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserHasNoCardException.class)
     public ResponseEntity<String> handleUserHasNoCardException(UserHasNoCardException ex) {
-        return ResponseEntity.badRequest().body("У данного пользователя нет доступа к одной из карт " + ex.getMessage());
+        return ResponseEntity.badRequest().body("У пользователя нет доступа к этой карте" + ex.getMessage());
     }
 
     @ExceptionHandler(UserNoHasMoney.class)
     public ResponseEntity<String > handleUserNoHasMoney (UserNoHasMoney ex){
-        return ResponseEntity.badRequest().body("У данного пользователя  не хватает денежных средств");
-
+        return ResponseEntity.badRequest().body("Недостаточно средств на карте");
     }
-
-
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException ex) {
         return ResponseEntity.badRequest().body("Такой Email не найден  ");

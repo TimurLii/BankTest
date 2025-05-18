@@ -1,9 +1,12 @@
 package com.example.bankcards.exception;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class AuthError {
     private int status;
+
 
     private String message;
 
