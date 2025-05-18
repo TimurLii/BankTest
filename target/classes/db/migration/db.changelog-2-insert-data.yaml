@@ -39,7 +39,7 @@ databaseChangeLog:
                   value: '$2a$12$KLWZrlZkE86b5kZrK9er6OyY9ClrIdiCjAV9as5GEerVb11o/jMMO'
               - column:
                   name: email
-                  value: 'admin@example.com'
+                  value: 'admin@mail.com'
 
         - insert:
             tableName: users_roles
@@ -50,3 +50,27 @@ databaseChangeLog:
               - column:
                   name: role_id
                   valueNumeric: 2
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: card_holder_name
+                  value: user
+              - column:
+                  name: password
+                  value: '$2a$12$FEpjpV6H6yYuIaLYmqeD5ehm2VGcAK6fwJn8hjTc8o6W1zFeiCiFy'
+              - column:
+                  name: email
+                  value: 'user@mail.com'
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 2
+              - column:
+                  name: role_id
+                  valueNumeric: 1

@@ -2,4 +2,4 @@ spring:
   datasource:
     url: jdbc:postgresql://db:5432/bankdb
     username: postgres
-    password: password
+    password: admin

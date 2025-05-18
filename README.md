@@ -1,1 +1,1 @@
-docker-compose up --build в папке проекта 
+docker-compose up --build 
