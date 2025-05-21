@@ -217,17 +217,6 @@ class BankCardServiceTest {
     }
 
     @Test
-    void saveAll() {
-        Set<BankCard> bankCards = new HashSet<>();
-        bankCards.add(new BankCard());
-        bankCards.add(new BankCard());
-
-        bankCardService.saveAll(bankCards);
-
-        verify(bankCardRepository, times(1)).saveAll(bankCards);
-    }
-
-    @Test
     void findByBankCardNumber() {
         BankCard card = new BankCard();
         when(bankCardRepository.findBankCardByBankCardNumber("123")).thenReturn(Optional.of(card));

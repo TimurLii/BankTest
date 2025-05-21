@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
 
+/**
+ * BankCardController - create, get, delete, update method for BankCard
+ * only for users with the ADMIN role
+ */
 @RestController
 public class BankCardController {
     private final BankCardService bankCardService;
@@ -25,12 +29,23 @@ public class BankCardController {
         this.bankCardService = bankCardService;
     }
 
+    /**
+     *
+     * @param bankCardDto - dto for create bankcard
+     * @return ResponseEntity<BankCardDto>
+     */
     @PostMapping(value = "/cards", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured("ROLE_ADMIN")
     public ResponseEntity<?> createBankCard(@RequestBody @Valid BankCardDto bankCardDto) {
         return bankCardService.save(bankCardDto);
     }
 
+    /**
+     *
+     * @param userDetails  authorized user
+     * @param pageable interface for pagination output
+     * @return page bankCardDto
+     */
     @GetMapping("/cards")
     @PreAuthorize("hasRole('ADMIN') or isAuthenticated()")
     public Page<BankCardDto> getCards(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -45,6 +60,11 @@ public class BankCardController {
     }
 
 
+    /**
+     *
+     * @param id
+     * @return ResponseEntity<BankCardDto>
+     */
     @DeleteMapping("/cards/{id}")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<BankCardDto> deleteBankCard(@PathVariable Long id) {
@@ -52,6 +72,12 @@ public class BankCardController {
 
     }
 
+    /**
+     *
+     * @param id - bankCard for update
+     * @param bankCardUpdateDto - dto with modified parameters
+     * @return ResponseEntity<UpdateBankCardDto>
+     */
     @PatchMapping("/cards/{id}")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<BankCardDto> patchBankCard(@PathVariable Long id, @RequestBody @Valid BankCardUpdateDto bankCardUpdateDto) {

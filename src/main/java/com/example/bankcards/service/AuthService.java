@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AuthService {
     private final UserService userService;
@@ -28,6 +29,11 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * authentication user
+     * @param jwtRequest dto for create jwt token
+     * @return  JwtResponse (new token )
+     */
     public ResponseEntity<?> createAuthToken(JwtRequest jwtRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.cardHolderName(), jwtRequest.password()));
@@ -42,6 +48,11 @@ public class AuthService {
 
     }
 
+    /**
+     *
+     * @param registrationUserDto dto for create new user
+     * @return ResponseEntity<UserDto>
+     */
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto) {
         if(!registrationUserDto.password().equals(registrationUserDto.passwordConfirm())){
             return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(), "Пароли не совпадают"), HttpStatus.BAD_REQUEST);

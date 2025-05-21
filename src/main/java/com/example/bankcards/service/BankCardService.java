@@ -24,6 +24,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * BankCardService - service for delete ,create, update ,get bankCard
+ */
 @Service
 public class BankCardService {
 
@@ -37,6 +40,11 @@ public class BankCardService {
         this.createBankCardNumber = createBankCardNumber;
     }
 
+    /**
+     * Initial new BankCard and save bankCard
+     * @param bankCardDto dto for new BankCard
+     * @return ResponseEntity<BankCardDto>
+     */
     public ResponseEntity<BankCardDto> save(BankCardDto bankCardDto) {
 
         User user = userService.loadUserByEmail(bankCardDto.userDto().email())
@@ -68,6 +76,11 @@ public class BankCardService {
         return ResponseEntity.ok(newBankCardDto);
     }
 
+    /**
+     * Creating a unique BankCardNumber
+     * @return String new unique BankCardNumber
+     */
+
     private String getBankCardNumber() {
         String bankCardNumber;
         do {
@@ -76,6 +89,11 @@ public class BankCardService {
         return bankCardNumber;
     }
 
+    /**
+     *  Method for user only for users with the ADMIN role
+     * @param pageable interface for pagination output
+     * @return Page<BankCardDto>
+     */
     public Page<BankCardDto> getAllBankCard(Pageable pageable) {
         return bankCardRepository.findAll(pageable)
                 .map(bankCard -> {
@@ -93,6 +111,12 @@ public class BankCardService {
                 });
     }
 
+    /**
+     * Method for user only for users with the USER role
+     * @param  username username authorized  user
+     * @param pageable interface for pagination output
+     * @return Page<BankCardDto>
+     */
     public Page<BankCardDto> getCardsForUser(String username, Pageable pageable) {
         User user = userService.findByCardHolderName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -123,6 +147,11 @@ public class BankCardService {
         return ResponseEntity.ok(listBankCardDto);
     }
 
+    /**
+     * Delete Bankcard
+     * @param id  id bankCard for delete
+     * @return ResponseEntity<BankCardDto>
+     */
     public ResponseEntity<BankCardDto> deleteBankCardById(Long id) {
 
         Optional<BankCard> bankCardOptional = bankCardRepository.findById(id);
@@ -145,6 +174,12 @@ public class BankCardService {
         return ResponseEntity.ok(bankCardDto);
     }
 
+    /**
+     * Update bankCard
+     * @param id id bankCard for update
+     * @param bankCardUpdateDto  dto with modified parameters
+     * @return ResponseEntity<BankCardDto>
+     */
     public ResponseEntity<BankCardDto> updateBankCard(Long id, BankCardUpdateDto bankCardUpdateDto) {
         BankCard bankCard = bankCardRepository.findById(id)
                 .orElseThrow(() -> new BankCardNotFoundException("BankCard not found"));
@@ -178,14 +213,29 @@ public class BankCardService {
         return ResponseEntity.ok(updatedDto);
     }
 
+    /**
+     * Save Set<bankCard>
+     * @param updatedBankCards set new BankCard
+     */
     public void saveAll(Set<BankCard> updatedBankCards) {
         bankCardRepository.saveAll(updatedBankCards);
     }
 
+    /**
+     * find bankCard by BankCardNumber
+     * @param bankCarNumber
+     * @return Optional<BankCard>
+     */
     public Optional<BankCard> findByBankCardNumber(String bankCarNumber) {
         return bankCardRepository.findBankCardByBankCardNumber(bankCarNumber);
     }
 
+    /**
+     * assigning a new owner lists bankCard
+     * @param bankCardDtoList list to which the owner needs to be added
+     * @param user new owner
+     * @return Set<BankCard>
+     */
     @Transactional
     public Set<BankCard> updateBankCardsFromDtoList(List<BankCardDto> bankCardDtoList, User user) {
         Set<BankCard> updatedBankCards = new HashSet<>();

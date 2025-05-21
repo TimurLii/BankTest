@@ -51,11 +51,11 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllBankCard() {
+    void getAllUser() {
 
         when(userService.getAllUsers()).thenReturn(ResponseEntity.ok(List.of()));
 
-        ResponseEntity<?> actualResponse = userController.getAllBankCard();
+        ResponseEntity<?> actualResponse = userController.getAllUser();
 
         assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
         assertEquals(List.of(), actualResponse.getBody());
@@ -64,11 +64,11 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteBankCard() {
+    void deleteUser() {
 
         when(userService.deleteUserById(anyLong())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> actualResponse = userController.deleteBankCard(1L);
+        ResponseEntity<?> actualResponse = userController.deleteUser(1L);
 
         assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 

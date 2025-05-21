@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * TransferController - transfer money
+ */
 @RestController
 public class TransferController {
 
@@ -22,6 +25,12 @@ public class TransferController {
         this.bankCardTransferService = bankCardTransferService;
     }
 
+    /**
+     *
+     * @param bankTransferDto - dto for transfer money
+     * @param userDetails - authorized user
+     * @return - List<BankCardDto>
+     */
     @PostMapping("/transfer")
     public ResponseEntity<List<BankCardUpdateDto>> bankCardTransfer(
             @RequestBody @Valid BankTransferDto bankTransferDto,

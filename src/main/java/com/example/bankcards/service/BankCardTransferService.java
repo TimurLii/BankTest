@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for transfer
+ */
 @Service
 public class BankCardTransferService {
     private final BankCardRepository bankCardRepository;
@@ -31,6 +34,12 @@ public class BankCardTransferService {
         this.userService = userService;
     }
 
+    /**
+     *
+     * @param bankTransferDto dto for transfer
+     * @param userDetails  iwner bankCard
+     * @return List<BankCardUpdateDto>
+     */
     public ResponseEntity<List<BankCardUpdateDto>> bankCardTransfer(BankTransferDto bankTransferDto, UserDetailsImpl userDetails) {
         if (userDetails == null) {
             throw new AuthorizationException("Пользователь не авторизован или токен невалиден");
@@ -57,6 +66,11 @@ public class BankCardTransferService {
 
     }
 
+    /**
+     * Checking the status BankCard
+     * @param bankTransferDto dto for transfer
+     * @return true if status ACTIVITY or FALSE if not ACTIVITY
+     */
     private boolean statusBankCardActivity(BankTransferDto bankTransferDto) {
         BankCard sendersBankCard = bankCardRepository.findBankCardByBankCardNumber(bankTransferDto.sendersCard()).get();
         BankCard recipientsBankCard = bankCardRepository.findBankCardByBankCardNumber(bankTransferDto.recipientsCard()).get();
@@ -65,6 +79,41 @@ public class BankCardTransferService {
                 recipientsBankCard.getStatusCard().equals(BankCard.StatusCard.ACTIVE);
     }
 
+    /**
+     *
+     * @param bankTransferDto dto for transfer
+     * @param listBankCardDto list<BankCardDto> which the user has
+     * @return TRUE if user have bankCard  of FALSE if note have bankCard
+     */
+    private boolean haveBankCard(BankTransferDto bankTransferDto, List<BankCardDto> listBankCardDto) {
+        List<String> listBankCardNumber = listBankCardDto.stream().map(el -> el.bankCardNumber()).toList();
+        if (listBankCardNumber.contains(bankTransferDto.sendersCard()) && listBankCardNumber.contains(bankTransferDto.recipientsCard())) {
+            return true;
+        }
+
+        throw new UserHasNoCardException("Данная карта не является картой пользователя");
+    }
+
+    /**
+     *
+     * @param numberSendersBankCard
+     * @param transferAmount
+     * @return TRUE if balance BankCard > transferAmount or FALSE if balance BankCard < transferAmount
+     */
+    private boolean neededSumInSendersBankCard(String numberSendersBankCard, long transferAmount) {
+        Long balance = bankCardRepository
+                .findBankCardByBankCardNumber(numberSendersBankCard).get().getBalance();
+        if (balance >= transferAmount) {
+            return true;
+        }
+        throw new UserNoHasMoney(" Нехватает денежных средств");
+    }
+    /**
+     *
+     * @param bankTransferDto dto fro transfer
+     * @param sum sum transfer
+     * @return List<BankCardDto> after update
+     */
     private List<BankCardUpdateDto> updateBankCardAfterTransfer(BankTransferDto bankTransferDto, Long sum) {
 
         BankCard sendersBankCard = bankCardRepository.findBankCardByBankCardNumber(bankTransferDto.sendersCard()).get();
@@ -83,22 +132,5 @@ public class BankCardTransferService {
         return List.of(sendersBankCardUpdate, recipientsBankCardUpdate);
     }
 
-    private boolean haveBankCard(BankTransferDto bankTransferDto, List<BankCardDto> listBankCardDto) {
-        List<String> listBankCardNumber = listBankCardDto.stream().map(el -> el.bankCardNumber()).toList();
-        if (listBankCardNumber.contains(bankTransferDto.sendersCard()) && listBankCardNumber.contains(bankTransferDto.recipientsCard())) {
-            return true;
-        }
-
-        throw new UserHasNoCardException("Данная карта не является картой пользователя");
-    }
-
-    private boolean neededSumInSendersBankCard(String numberSendersBankCard, long transferAmount) {
-        Long balance = bankCardRepository
-                .findBankCardByBankCardNumber(numberSendersBankCard).get().getBalance();
-        if (balance >= transferAmount) {
-            return true;
-        }
-        throw new UserNoHasMoney(" Нехватает денежных средств");
-    }
 
 }
